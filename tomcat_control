@@ -1,0 +1,74 @@
+#!/bin/bash
+
+BASE_PATH="/usr/local/opt/tomcat";
+
+PID_FILE="/tmp/tomcat.pid";
+
+function start_tomcat(){
+    if [ -f $PID_FILE ];then
+        PID=$(cat $PID_FILE);
+        line=$(ps -p $PID | grep $PID | wc -l);
+        if [ $line == 1 ];then
+            echo "Tomcat Server is Running";
+            echo "PID is $PID";
+        else
+            sudo rm $PID_FILE
+            start_tomcat
+        fi
+    else
+        sudo "$BASE_PATH/bin/catalina" run > /dev/null 2>&1 &
+        PID=$(echo $!);
+        sudo echo "$PID" > $PID_FILE;
+        echo "Tomcat Server Start Successful";
+        echo "PID is $PID";
+    fi  
+}
+
+function stop_tomcat(){
+    if [ -f $PID_FILE ];then
+        PID=$(cat $PID_FILE);
+        sudo kill $PID > /dev/null 2>&1;
+        echo "Tomcat Server Stop Successful";
+        sudo rm $PID_FILE
+    else
+        echo "Tomcat Server already Stopped";
+    fi
+}
+
+function status_tomcat(){
+    if [ -f $PID_FILE ];then
+        PID=$(cat $PID_FILE);
+        line=$(ps -p $PID | grep $PID | wc -l);
+        if [ $line == 1 ];then
+            echo "Tomcat Server is Running";
+            echo "PID is $PID";
+        else
+            echo "Tomcat Server is not running";
+            sudo rm $PID_FILE
+        fi
+    else
+        echo "Tomcat Server is not running";
+    fi
+}
+
+case "$1" in
+    "start")
+        start_tomcat
+    ;;
+    "stop")
+        stop_tomcat
+    ;;
+    "restart")
+        stop_tomcat
+        start_tomcat
+    ;;
+    "status")
+        status_tomcat
+    ;;
+    "path")
+        echo "/usr/local/opt/tomcat/libexec/webapps/"
+    ;;
+    *)
+        echo "Usage: $0 [start|stop|restart|status]";
+    ;;
+esac

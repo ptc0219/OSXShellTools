@@ -1,0 +1,27 @@
+#!/bin/bash
+
+
+case $1 in
+    "start")
+        if ! sudo -s launchctl list | grep -q 'com.apple.ftpd'; then 
+            sudo -s launchctl load -w /System/Library/LaunchDaemons/ftp.plist
+            echo "Starting FTP Service"
+        else
+            echo "FTP Service Started"
+        fi
+        ;;
+    "stop")
+        if ! sudo -s launchctl list | grep -q 'com.apple.ftpd'; then 
+            echo "FTP Service Stopped"
+        else
+            sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
+            echo "Stopping FTP Service"
+        fi
+        ;;
+    *)
+        echo "usage: `basename ${0}` {start|stop}"
+        exit 1
+        ;;
+esac
+
+
