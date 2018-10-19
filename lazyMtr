@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+	sudo mtr 8.8.8.8
+else
+	sudo mtr $1
+fi
