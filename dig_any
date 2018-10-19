@@ -1,0 +1,3 @@
+#!/bin/bash
+
+dig +nocmd +multiline +noall +answer $1 any
